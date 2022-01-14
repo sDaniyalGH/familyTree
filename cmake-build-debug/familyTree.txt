@@ -1,6 +1,6 @@
 jamshid,1,0,m,m,6
 leila,2,6,f,m,7
-daniyal,3,7,m
+daniyal,3,7,m,m,18
 far,4,6,f
 arian,5,4,m
 bb,6,8,f,m,1
@@ -16,3 +16,4 @@ pdmamad,15,14,m
 fpsdaliii,16,15,m
 khalil,17,16,m
 ray,18,13,f,m,3
+shahi,19,0,f,m,12

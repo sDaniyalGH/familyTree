@@ -52,11 +52,11 @@ void updateHamsayeHa() {
     for (auto &e: people) {
 
         // add mom
-        if (e.idMom != -1)
+        if (e.idMom != 0)
             hamsayeHa[e.id].push_back(e.idMom);
 
         // add dad
-        if (e.idDad != -1)
+        if (e.idDad != 0)
             hamsayeHa[e.id].push_back(e.idDad);
 
         for (auto &child: e.children)
@@ -218,7 +218,7 @@ void addPerson() {
     cin >> isMarried;
 
     if (isMarried) {
-        cout << "\nwife id\n";
+        cout << "\nSpouse id\n";
         cin >> idWife;
         if (idWife == id || ids.find(idWife) == ids.end()) {
             cout << "\nerror!\n";
