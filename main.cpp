@@ -77,6 +77,10 @@ void loadfile(string str) {
 
     str += ".txt";
     fstream file(str);
+    if (!file.is_open()) {
+        cout << "error\n\n";
+        return;
+    }
 
     string line;
 
@@ -189,8 +193,6 @@ void addPerson() {
 
     ll id = ids.size() + 1;
 
-    ids.insert(id);
-
     string name;
     cout << "name ?\n";
     cin >> name;
@@ -203,9 +205,10 @@ void addPerson() {
     cout << "\nparent id ??? \n";
     cin >> idParent;
 
-    while (idParent == id) {
-        cout << "\nPlease Enter Another id\n";
-        cin >> idParent;
+
+    if ((idParent == id || ids.find(idParent) == ids.end()) && idParent != 0) {
+        cout << "\nerror!\n";
+        return;
     }
 
 
@@ -217,6 +220,11 @@ void addPerson() {
     if (isMarried) {
         cout << "\nwife id\n";
         cin >> idWife;
+        if (idWife == id || ids.find(idWife) == ids.end()) {
+            cout << "\nerror!\n";
+            return;
+        }
+
     }
 
     Person p;
@@ -260,7 +268,7 @@ void addPerson() {
             }
         }
     }
-
+    ids.insert(id);
     people.push_back(p);
     updateHamsayeHa();
 
@@ -456,6 +464,10 @@ string findRelationship(ll first, ll sec) {
     queue<string> ans;
     bfs(first);
     vector<ll> afrad = findAfrad(first, sec);
+
+    for (auto e : afrad)
+        if (e == -1)
+            return "not found!";
     ll now = first, next;
 
 
@@ -618,7 +630,7 @@ void menu() {
                 continue;
             }
             string p = findRelationship(first, sec);
-            cout << p;
+            cout << p << "\n";
         } else if (num == 4)
             exit(0);
     }

@@ -4,8 +4,15 @@ daniyal,3,7,m
 far,4,6,f
 arian,5,4,m
 bb,6,8,f,m,1
-mort,7,0,m,m,2
+mort,7,12,m,m,2
 pedar,8,0,m
 fanar,9,8,f
 jasem,10,5,m
 hesam,11,5,m
+hadi,12,0,m
+mosi,13,12,m
+eidi,14,8,m
+pdmamad,15,14,m
+fpsdaliii,16,15,m
+khalil,17,16,m
+ray,18,13,f,m,3
