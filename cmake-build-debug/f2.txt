@@ -1,0 +1,10 @@
+jamshid,1,0,m,m,6
+leila,2,6,f,m,7
+daniyal,3,7,m
+far,4,6,f
+arian,5,4,m
+bb,6,8,f,m,1
+mort,7,0,m,m,2
+pedar,8,0,m
+fanar,9,8,f
+jasem,10,5,m
