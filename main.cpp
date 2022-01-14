@@ -3,6 +3,7 @@
 using namespace std;
 typedef long long ll;
 
+// marry with !gender
 // if relatioan eshtab bood --> error
 // har chi eshtab bood --> error
 // back dashte bashe
@@ -11,11 +12,12 @@ typedef long long ll;
 // 0 to 9 jad      ,,,,,   0 to 9 nave
 struct Person {
     string name;
-    ll id{};
-    ll idDad = -1;
-    ll idMom = -1;
-    bool gender{}; // 0 male , 1 female
-    bool married{};
+    ll id;
+    ll idDad = 0;
+    ll idMom = 0;
+    ll idParent = 0;
+    bool gender; // 0 male , 1 female
+    bool married;
     ll idWife = -1;
     vector<Person> children;
 };
@@ -72,6 +74,7 @@ void updateHamsayeHa() {
 }
 
 void loadfile(string str) {
+
     str += ".txt";
     fstream file(str);
 
@@ -80,7 +83,7 @@ void loadfile(string str) {
     while (getline(file, line)) {
         string temp;
         vector<string> infos;
-        for (char e: line) {
+        for (char &e: line) {
             if (e != ',')
                 temp += e;
             else {
@@ -94,21 +97,59 @@ void loadfile(string str) {
         Person p;
         p.name = infos[0];
         p.id = stoi(infos[1]);
-        p.idDad = stoi(infos[2]);
-        p.idMom = stoi(infos[3]);
-        p.gender = stoi(infos[4]);
-        p.idWife = stoi(infos[5]);
-        if (p.idWife != -1)
-            p.married = 1;
+        p.idParent = stoi(infos[2]);
+        if (infos[3] == "f")
+            p.gender = 1;
         else
+            p.gender = 0;
+
+
+        if (infos.size() > 4) {
+            p.married = 1;
+            p.idWife = stoi(infos[5]);
+        } else {
             p.married = 0;
+            p.idWife = -1;
+        }
+
         ids.insert(p.id);
         people.push_back(p);
     }
 
+    // set mom & dad
+
+    for (auto &e: people) {
+        if (e.idParent != 0) {
+
+            for (auto &parent: people) {
+                if (parent.id == e.idParent) {
+                    if (parent.gender)
+                        e.idMom = parent.id;
+                    else
+                        e.idDad = parent.id;
+
+                    // search for another (if mom , search dad)
+                    if (parent.married) {
+
+                        for (auto &marry: people) {
+                            if (marry.id == parent.idWife) {
+                                if (marry.gender)
+                                    e.idMom = marry.id;
+                                else
+                                    e.idDad = marry.id;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
     // add children
     for (auto &e: people) {
-
         for (auto &dadormom: people) {
             if (dadormom.id == e.idMom || dadormom.id == e.idDad)
                 dadormom.children.push_back(e);
@@ -122,8 +163,23 @@ void savefile() {
     fstream file;
     file.open("familyTree.txt", ios::out);
 
-    for (auto &e: people)
-        file << e.name << "," << e.id << "," << e.idDad << "," << e.idMom << "," << e.gender << "," << e.idWife << "\n";
+
+    for (auto &e: people) {
+        ll idParent = max(e.idDad, e.idMom);
+        char gender;
+        if (e.gender)
+            gender = 'f';
+        else
+            gender = 'm';
+
+
+        file << e.name << "," << e.id << "," << idParent << "," << gender;
+        if (e.idWife != -1)
+            file << ",m," << e.idWife;
+
+        file << "\n";
+
+    }
 
     file.close();
 
@@ -140,11 +196,11 @@ void addPerson() {
     cin >> name;
 
     bool gender;
-    cout << "\ngender\n0-male\n1-female\n\n";
+    cout << "\ngender\n0-male\n1-female\n";
     cin >> gender;
 
     ll idParent;
-    cout << "\nparent id ??? \n\n\n";
+    cout << "\nparent id ??? \n";
     cin >> idParent;
 
     while (idParent == id) {
@@ -155,11 +211,11 @@ void addPerson() {
 
     bool isMarried;
     ll idWife = -1;
-    cout << "\nis married??? \n\n\n";
+    cout << "\nis married??? \n1-Yes\n0-No\n";
     cin >> isMarried;
 
     if (isMarried) {
-        cout << "\nwife id";
+        cout << "\nwife id\n";
         cin >> idWife;
     }
 
@@ -251,19 +307,6 @@ vector<ll> findAfrad(ll first, ll sec) {
     return afrad;
 }
 
-vector<Person> findBroSis(Person person) {
-
-    vector<Person> ans;
-    for (auto &e: people) {
-        if (((e.idDad == person.idDad && e.idDad != -1) || (e.idMom == person.idMom && e.idMom != -1)) &&
-            e.id != person.id) {
-            // e is brother or sister
-
-            ans.push_back(e);
-        }
-    }
-    return ans;
-}
 
 string findOne(Person first, Person sec) {
 
@@ -292,7 +335,6 @@ string findOne(Person first, Person sec) {
 
 
 }
-
 
 string tarkib(string first, string second) {
     isChangeable = 1;
@@ -517,17 +559,51 @@ void updateWifeHusband() {
     }
 }
 
+void debuging() {
+    for (auto &e: people) {
+        cout << "\n";
+        cout << "id : " << e.id
+             << " /// name : " << e.name << " /// id dad : " << e.idDad << " /// id mom : " << e.idMom
+             << " /// gender : "
+             << e.gender << " /// id wife : "
+             << e.idWife;
+    }
+
+    cout << "\n\n";
+}
+
+
+void preProccess(string str) {
+
+
+    people.clear();
+    ids.clear();
+
+    for (auto &e: hamsayeHa)
+        e.clear();
+
+    loadfile(str);
+    updateWifeHusband();
+    updateHamsayeHa();
+    debuging();
+}
+
 void menu() {
 
     while (true) {
         cout << "\n1-open file\n"
                 "2-add new person\n"
                 "3-find relationship\n"
-                "4-exit\n\n";
+                "4-exit\n";
         ll num;
         cin >> num;
 
-        if (num == 2) {
+        if (num == 1) {
+            string str;
+            cout << "file name ? \n";
+            cin >> str;
+            preProccess(str);
+        } else if (num == 2) {
             addPerson();
             savefile();
             updateHamsayeHa();
@@ -536,6 +612,11 @@ void menu() {
             cout << "input first and second\n";
             ll first, sec;
             cin >> first >> sec;
+
+            if (ids.find(first) == ids.end() || ids.find(sec) == ids.end()) {
+                cout << "error\n";
+                continue;
+            }
             string p = findRelationship(first, sec);
             cout << p;
         } else if (num == 4)
@@ -548,16 +629,8 @@ void menu() {
 
 int main() {
 
-    //cout << "file name ?\n";
-    string str = "familyTree";
-    //cin >> str;
-    loadfile(str);
-    updateWifeHusband();
-    updateHamsayeHa();
-    for (auto &e: people) {
-        cout << "\n";
-        cout << e.name << " " << e.idDad << " " << e.idMom << " " << e.id << " " << e.gender << " " << e.idWife << "\n";
-    }
+    preProccess("familyTree");
+
 
     menu();
     return 0;
