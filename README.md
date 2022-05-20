@@ -1,6 +1,6 @@
 # familyTree
 
-$ Family Relations Between Two People $
+$$ Family Relations Between Two People $$
 
 
 
